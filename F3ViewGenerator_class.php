@@ -18,9 +18,9 @@ class F3ViewGenerator {
 	public $view_classes_folder_location = 'f3vg/view_classes'; // TODO: Exception in .gitignore for this folder.
 	public $view_templates_prefix = 'f3vg'; // Prefix for template file names. With default value it would be f3vg_templatename.htm
 	public $generated_views_data;
-	public &$f3; // Pointer to the Fat Free Framework variable.
+	public $f3; // Pointer to the Fat Free Framework variable.
 
-	public function __construct($view_content_varname, $view_templates_prefix, &$f3) {
+	public function __construct($view_content_varname, $view_templates_prefix) {
 
 		// Check if the view content variable name is given as argument, in wich case should replace the default.
 		if(!empty($view_content_varname)) {
@@ -31,7 +31,7 @@ class F3ViewGenerator {
 			$this -> view_templates_prefix = $view_templates_prefix;
 		}
 
-		$this -> f3 = &$f3;
+		$this -> f3 = \Base::instance();
 
 	}
 
