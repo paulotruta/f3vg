@@ -15,7 +15,7 @@ class F3BaseView {
 	
 	public $view_templates_prefix = 'f3vg'; // Prefix for template file names. With default value it would be f3vg_templatename.htm
 
-	public $f3; // The Fat Free Framework variable pointer.
+	public $f3; // Instance of the Fat Free Framework variable.
 
 	public function __construct($view_content_varname = null, $view_templates_prefix = null) {
 

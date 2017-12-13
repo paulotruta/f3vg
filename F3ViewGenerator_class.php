@@ -18,7 +18,7 @@ class F3ViewGenerator {
 	public $view_classes_folder_location = 'f3vg/view_classes'; // TODO: Exception in .gitignore for this folder.
 	public $view_templates_prefix = 'f3vg'; // Prefix for template file names. With default value it would be f3vg_templatename.htm
 	public $generated_views_data;
-	public $f3; // Pointer to the Fat Free Framework variable.
+	public $f3; // Instance of the Fat Free Framework variable.
 
 	public function __construct($view_content_varname, $view_templates_prefix) {
 
@@ -43,8 +43,56 @@ class F3ViewGenerator {
 	public function generate_view_routes() {
 
 		// Extract view names present in the $view_classes_folder_location and loop through importing them, generating the respective get and post routes by calling the view class get_view and post_view functions respectively.
+		// Take note that every view that uses this generator will be available through a base url given as construct parameter.
 
-		// TODO... Next pomodoro sprint ;)
+		$this -> generated_view_data = array();
+		$view_classes = scandir($this -> view_classes_folder_location);
+		unset($view_classes[0]); // Unset "." folder;
+		unset($view_classes[1]); // Unset ".." folder;
+
+		Import all the classes.
+		foreach ($view_class as $view_class_key => $view_class_filename) {
+			include($view_class_filename);
+			$view_class_name = str_replace('.php', '', $view_class_filename);
+			$this -> generated_views_data[] = array(
+				'view_file' => $this -> view_classes_folder_location . '/' . $view_class_filename,
+				'view_classname' => $view_class_name,
+				'view_template' => 'ui/' . $view_templates_prefix . '_' . $view_class_name . '.htm',
+			)
+		}
+
+		// Declare and dynamically get the GET generic view.
+		$this -> f3 -> route('GET /' . $this -> view_templates_prefix . '/@view_name',
+			function($this -> f3) {
+
+				$target_class_name = ucfirst($this -> f3 -> get('PARAM.view_name')) . '.php';
+
+				if(in_array($target_class_name, $view_classes)) {
+					// include(ucfirst($this -> f3 -> get('PARAM.view_name')) . '.php');
+					$view_class_instance = new $target_class_name();
+					$view_class_instance -> get_view();
+				}
+
+			}
+		);
+
+		// Declare and dynamically get the POST view.
+		$this -> f3 -> route('POST /' . $this -> view_templates_prefix . '/@view_name',
+			function($this -> f3) {
+
+				$target_class_name = ucfirst($this -> f3 -> get('PARAM.view_name')) . '.php';
+
+				if(in_array($target_class_name, $view_classes)) {
+					// include(ucfirst($this -> f3 -> get('PARAM.view_name')) . '.php');
+					$view_class_instance = new $target_class_name();
+					$view_class_instance -> post_view();
+				}
+			}
+		);
+
+		return $this -> generated_views_data;
+
+		// TODO... Properly unit test this shiaaaaat ;)
 
 	}
 	

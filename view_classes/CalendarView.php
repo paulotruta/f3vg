@@ -13,12 +13,12 @@ class CalendarView extends F3BaseView {
 
 	public $view_name = 'calendar';
 
-	public function __construct(&$f3, $view_content_varname = null, $view_templates_prefix = null) {
+	public function __construct($view_content_varname = null, $view_templates_prefix = null) {
 
 		// $view_content_varname = 'content'; // Default name for framework content variable. Useful if templating with f3.
 		// $view_templates_prefix = 'f3vg'; // Override view template prefixes if needed.
 
-		parent::__construct(&$f3, $view_content_varname, $view_templates_prefix);
+		parent::__construct($view_content_varname, $view_templates_prefix);
 
 	}
 
