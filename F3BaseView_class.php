@@ -42,7 +42,7 @@ class F3BaseView {
 		if($return_html) {
 			// TODO: Open file; Extract html, replace variables. Return content in variable.
 		} else {
-			$this -> f3 -> set($this -> view_content_varname, $this -> view_templates_prefix . '_' $view_name);
+			$this -> f3 -> set($this -> view_content_varname, $this -> view_templates_prefix . '_' . $view_name);
 		}
 
 		return true; // Could be a good idea to return useful developer information in array context.

@@ -33,6 +33,8 @@ class F3ViewGenerator {
 
 		$this -> f3 = \Base::instance();
 
+		$this -> generate_view_data;
+
 	}
 
 
