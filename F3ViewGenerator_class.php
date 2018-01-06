@@ -36,7 +36,7 @@ class F3ViewGenerator {
 		if(!empty($view_templates_prefix)) {
 			$this -> view_templates_prefix = $view_templates_prefix;
 		}
-		
+
 		if(!empty($view_classes_folder_location)) {
 			$this -> view_classes_folder_location = $view_classes_folder_location;
 		}
@@ -78,7 +78,6 @@ class F3ViewGenerator {
 
 		// Save current information to the framework.
 		$this -> f3 -> set('view_classes', $view_classes);
-		$this -> f3 -> set('view_class', $this -> f3 -> get('PARAMS.view_name'));
 		$this -> f3 -> set('views_data', $this -> generated_views_data);
 
 		// Declare and dynamically get the GET generic view.
