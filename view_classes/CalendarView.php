@@ -11,7 +11,7 @@
 
 class CalendarView extends F3BaseView {
 
-	public $view_name = 'calendar';
+	public $view_name = 'CalendarView';
 
 	public function __construct($view_content_varname = null, $view_templates_prefix = null) {
 
@@ -22,7 +22,7 @@ class CalendarView extends F3BaseView {
 
 	}
 
-	public function get_view() {
+	public function get_view($view_name = 'CalendarView', $return_html = false) {
 
 		// (...) Do view logic here (...)
 
@@ -30,24 +30,14 @@ class CalendarView extends F3BaseView {
 
 	}
 
-	public function post_view($post_content = null) {
+	public function post_view($view_name = 'CalendarView', $post_content = null) {
 
 		// (...) Do view post logic here (...)
+	
 
 
 		// Tip: To route to a different GET route than the original, change $this -> view_name with the wanted view destination in the return.
 		return parent::post_view($this -> view_name);
-
-	}
-
-	public function with_notice($return_value, $message) {
-
-		if(!empty($message) && is_string($message)) {
-		// Issue a notice on PHP Error log.
-			$message = __CLASS__ . ': ' . $message . PHP_EOL;
-		}
-
-		return $return_value;
 
 	}
 }

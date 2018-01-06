@@ -15,14 +15,20 @@
 class F3ViewGenerator {
 
 	public $view_content_varname = 'content'; // Default name for framework content variable. Useful if templating with f3.
-	public $view_classes_folder_location = 'f3vg/view_classes'; // TODO: Exception in .gitignore for this folder.
+	public $view_classes_folder_location = 'view_classes'; // TODO: Exception in .gitignore for this folder.
 	public $view_templates_prefix = 'f3vg'; // Prefix for template file names. With default value it would be f3vg_templatename.htm
+	public $error_404_route = '/404';
 	public $generated_views_data;
+
 	public $f3; // Instance of the Fat Free Framework variable.
 
-	public function __construct($view_content_varname, $view_templates_prefix) {
+	public function __construct($error_404_route = null, $view_content_varname = null, $view_templates_prefix = null, $view_classes_folder_location = null) {
 
 		// Check if the view content variable name is given as argument, in wich case should replace the default.
+		if(!empty($error_404_route)) {
+			$this -> error_404_route = $error_404_route;
+		}
+
 		if(!empty($view_content_varname)) {
 			$this -> view_content_varname = $view_content_varname;
 		}
@@ -30,13 +36,17 @@ class F3ViewGenerator {
 		if(!empty($view_templates_prefix)) {
 			$this -> view_templates_prefix = $view_templates_prefix;
 		}
+		
+		if(!empty($view_classes_folder_location)) {
+			$this -> view_classes_folder_location = $view_classes_folder_location;
+		}
+
 
 		$this -> f3 = \Base::instance();
 
-		$this -> generate_view_data;
+		$this -> generate_view_routes();
 
 	}
-
 
 	/**
 	 * Generates routes on the framework based on the generated views data.
@@ -48,31 +58,48 @@ class F3ViewGenerator {
 		// Take note that every view that uses this generator will be available through a base url given as construct parameter.
 
 		$this -> generated_view_data = array();
-		$view_classes = scandir($this -> view_classes_folder_location);
+		$view_classes = scandir(dirname(__FILE__) . '/' . $this -> view_classes_folder_location);
+
 		unset($view_classes[0]); // Unset "." folder;
 		unset($view_classes[1]); // Unset ".." folder;
 
-		Import all the classes.
-		foreach ($view_class as $view_class_key => $view_class_filename) {
-			include($view_class_filename);
+		// Import all the classes.
+		foreach ($view_classes as $view_class_key => $view_class_filename) {
+
+			include($this -> view_classes_folder_location . '/' . $view_class_filename);
+
 			$view_class_name = str_replace('.php', '', $view_class_filename);
 			$this -> generated_views_data[] = array(
 				'view_file' => $this -> view_classes_folder_location . '/' . $view_class_filename,
 				'view_classname' => $view_class_name,
-				'view_template' => 'ui/' . $view_templates_prefix . '_' . $view_class_name . '.htm',
-			)
+				'view_template' => 'ui/' . $this -> view_templates_prefix . '_' . $view_class_name . '.htm',
+			);
 		}
 
+		// Save current information to the framework.
+		$this -> f3 -> set('view_classes', $view_classes);
+		$this -> f3 -> set('view_class', $this -> f3 -> get('PARAMS.view_name'));
+		$this -> f3 -> set('views_data', $this -> generated_views_data);
+
 		// Declare and dynamically get the GET generic view.
-		$this -> f3 -> route('GET /' . $this -> view_templates_prefix . '/@view_name',
-			function($this -> f3) {
-
-				$target_class_name = ucfirst($this -> f3 -> get('PARAM.view_name')) . '.php';
-
-				if(in_array($target_class_name, $view_classes)) {
-					// include(ucfirst($this -> f3 -> get('PARAM.view_name')) . '.php');
+		$this -> f3 -> route('GET /' . $this -> view_templates_prefix . '/@view',
+			function() {
+				// Reget the instance and associated information. Then check for route existance and issue the corresponding view.
+				$f3 = \Base::instance();
+				$view_classes = $f3 -> get('view_classes');
+				$target_class_name = $f3 -> get('PARAMS.view');
+				$target_class_filename = $target_class_name . '.php';
+				if(in_array($target_class_filename, $view_classes)) {
+					// Dynamically issue a new class for the approved view.
 					$view_class_instance = new $target_class_name();
 					$view_class_instance -> get_view();
+				}
+				else {
+
+
+					// 404. Reroute.
+
+					$f3 -> reroute($this -> error_404_route);
 				}
 
 			}
@@ -80,25 +107,33 @@ class F3ViewGenerator {
 
 		// Declare and dynamically get the POST view.
 		$this -> f3 -> route('POST /' . $this -> view_templates_prefix . '/@view_name',
-			function($this -> f3) {
+			function() {
+				// Reget the instance and associated information. Then check for route existance and issue the corresponding view.
+				$f3 = \Base::instance();
+				$view_classes = $f3 -> get('view_classes');
+				$target_class_name = $f3 -> get('PARAMS.view');
+				$target_class_filename = $target_class_name . '.php';
 
-				$target_class_name = ucfirst($this -> f3 -> get('PARAM.view_name')) . '.php';
-
-				if(in_array($target_class_name, $view_classes)) {
-					// include(ucfirst($this -> f3 -> get('PARAM.view_name')) . '.php');
+				if(in_array($target_class_filename, $view_classes)) {
+					// Dynamically issue a new class for the approved view.
 					$view_class_instance = new $target_class_name();
-					$view_class_instance -> post_view();
+					$view_class_instance -> get_view();
+				}
+				else {
+					// 404. Reroute.
+					$f3 -> reroute($this -> error_404_route);
 				}
 			}
 		);
 
 		return $this -> generated_views_data;
 
+		// Done. Correct view should be printed to the screen by now.
 		// TODO... Properly unit test this shiaaaaat ;)
 
 	}
 	
-	public function view_exists($view_name == null) {
+	public function view_exists($view_name = null) {
 
 		// TODO: Check if view exists in the generated views data.
 		if(!empty($this -> generated_views_data['views'][ $view_name ])) return true;

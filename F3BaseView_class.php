@@ -12,8 +12,12 @@
 class F3BaseView {
 
 	public $view_content_varname = 'content'; // Default name for framework content variable. Useful if templating with f3.
+
+	public $template_render_filename = 'layout.htm'; // Filename of the main layout used in the template rendering.
 	
 	public $view_templates_prefix = 'f3vg'; // Prefix for template file names. With default value it would be f3vg_templatename.htm
+
+	public $view_templates_extension = 'htm'; // Extension used for html templates.
 
 	public $f3; // Instance of the Fat Free Framework variable.
 
@@ -42,7 +46,8 @@ class F3BaseView {
 		if($return_html) {
 			// TODO: Open file; Extract html, replace variables. Return content in variable.
 		} else {
-			$this -> f3 -> set($this -> view_content_varname, $this -> view_templates_prefix . '_' . $view_name);
+			$this -> f3 -> set($this -> view_content_varname, $this -> view_templates_prefix . '_' . $view_name . '.' . $this -> view_templates_extension);
+			echo Template::instance()->render($this -> template_render_filename);
 		}
 
 		return true; // Could be a good idea to return useful developer information in array context.
