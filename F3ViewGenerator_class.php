@@ -22,7 +22,7 @@ class F3ViewGenerator {
 
 	public $f3; // Instance of the Fat Free Framework variable.
 
-	public function __construct($error_404_route = null, $view_content_varname = null, $view_templates_prefix = null, $view_classes_folder_location = null) {
+	public function __construct($error_404_route, $view_content_varname, $view_templates_prefix, $view_classes_folder_location) {
 
 		// Check if the view content variable name is given as argument, in wich case should replace the default.
 		if(!empty($error_404_route)) {
@@ -105,8 +105,11 @@ class F3ViewGenerator {
 		);
 
 		// Declare and dynamically get the POST view.
-		$this -> f3 -> route('POST /' . $this -> view_templates_prefix . '/@view_name',
+		$this -> f3 -> route('POST /' . $this -> view_templates_prefix . '/@view',
 			function() {
+
+				error_log("ENTERED POST ROUTING SYSTEM");
+
 				// Reget the instance and associated information. Then check for route existance and issue the corresponding view.
 				$f3 = \Base::instance();
 				$view_classes = $f3 -> get('view_classes');
@@ -114,12 +117,15 @@ class F3ViewGenerator {
 				$target_class_filename = $target_class_name . '.php';
 
 				if(in_array($target_class_filename, $view_classes)) {
+					error_log("ISSUING CLASS INSTANCE");
 					// Dynamically issue a new class for the approved view.
 					$view_class_instance = new $target_class_name();
-					$view_class_instance -> get_view();
+					$view_class_instance -> post_view();
 				}
 				else {
 					// 404. Reroute.
+					error_log("NOT FOUND REROUTING");
+					error_log(var_dump($target_class_filename));
 					$f3 -> reroute($this -> error_404_route);
 				}
 			}

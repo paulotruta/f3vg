@@ -60,17 +60,20 @@ class F3BaseView {
 			return $this -> with_notice(false, 'The view name given in post_view method is not valid.');
 		}
 
-		$this -> f3 -> reroute($view_name);
+		// $this -> f3 -> reroute($view_name);
+		
+		$this -> get_view($view_name);
 
 		return true;
 
 	}
 
-	public function with_notice($return_value, $message) {
+	public function with_notice($return_value, $message, $issue_to_log = true) {
 
 		if(!empty($message) && is_string($message)) {
-		// Issue a notice on PHP Error log.
-			$message = __CLASS__ . ': ' . $message . PHP_EOL;
+			// Issue a notice on PHP Error log.
+			$message = __CLASS__ . " child class " . get_class($this) . ': ' . $message;
+			($issue_to_log) ? error_log($message) : $return_value .= " returned in " . $message;
 		}
 
 		return $return_value;

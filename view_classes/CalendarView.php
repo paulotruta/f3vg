@@ -9,7 +9,7 @@
  * This class is only meant to be extended by child view classes (although it can be instantiated solely. The View Generator class will automatically do that, and issue the respective get and post views using the framework variable for each child class extending this one.
 */
 
-class CalendarView extends F3BaseView {
+class CalendarView extends BragaCupBaseView {
 
 	public $view_name = 'CalendarView';
 
@@ -25,6 +25,20 @@ class CalendarView extends F3BaseView {
 	public function get_view($view_name = 'CalendarView', $return_html = false) {
 
 		// (...) Do view logic here (...)
+
+		if(!$this -> f3 -> get('is_authorized')) {
+			// Informações do calendário geral para equipas inscritas no torneio.
+		}
+
+		if(!$this -> f3 -> get('is_admin')) {
+
+		}
+
+		if(false){
+			error_log($this -> with_notice(true, "The user is not authorized to see this content. Showing not authorized page.", false));
+			return parent::get_view('NotAuthorized');
+		}
+
 
 		return parent::get_view($this -> view_name);
 
