@@ -140,7 +140,10 @@ class GestaoDesportiva extends BragaCupBaseView {
 		// Check if calendar was correctly created.
 		if(!$calendar_obj -> exists($this -> f3 -> get('POST.categoria'))) {
 
-			$calendar_obj = new Calendar(array('categoria' => $this -> f3 -> get('POST.categoria')));
+			$calendar_obj = new Calendar(array(
+				'categoria' => $this -> f3 -> get('POST.categoria'),
+				'categorias_por_serie' => $this -> f3 -> get('POST.equipas_por_serie')
+			));
 			$this -> f3 -> set('message_code', 92);
 		} else {
 			$this -> f3 -> set('message_code', 93);
