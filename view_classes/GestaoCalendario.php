@@ -54,8 +54,10 @@ class GestaoCalendario extends BragaCupBaseView {
 
 			$this -> f3 -> set('series_info', $series_info);
 
+			$this -> f3 -> set('calendar_info', $calendar_obj -> get_matchday_mapping());
+
 		} else {
-			$this -> f3 -> set('valid_calendar', false);
+			$this -> f3 -> reroute('GestaoDesportiva');
 		}
 
 		if(!$this -> f3 -> get('is_authorized') || !$this -> f3 -> get('is_admin')) {
@@ -63,9 +65,6 @@ class GestaoCalendario extends BragaCupBaseView {
 			error_log($this -> with_notice(true, "The user is not authorized to see this content. Showing not authorized page.", false));
 			return parent::get_view('NotAuthorized');
 		}
-
-
-		
 
 		return parent::get_view($this -> view_name);
 
